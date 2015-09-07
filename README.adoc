@@ -1,0 +1,3 @@
+= Swagger UI for OpenShift 3
+
+This project deploys a Swagger UI into OpenShift 3, and it will connect to the OpenShift Master server swaggerapi URLs
