@@ -1,3 +1,19 @@
 = Swagger UI for OpenShift 3
 
 This project deploys a Swagger UI into OpenShift 3, and it will connect to the OpenShift Master server swaggerapi URLs
+
+----
+oc new-project swagger
+oc deploy -f https://raw.githubusercontent.com/jorgemoralespou/swagger-ui-ose3/master/swagger-ui.json
+----
+
+By default the route will be swaggerui.example.com. You can change it to match your domain. (Change the hostname for the route)
+
+----
+oc edit route swaggerui
+----
+
+Once you open a browser pointing to the swagger-ui, you will need to enter any of the OpenShift Swagger api URLs:
+
+* *K8s API*: https://<master.example.com>:8443/swaggerapi/oapi/v1/
+* *OpenShift API*: https://<master.example.com>:8443/swaggerapi/api/v1/

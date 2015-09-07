@@ -1,0 +1,203 @@
+{
+   "kind": "List",
+   "apiVersion": "v1",
+   "metadata": {
+      "name": "swaggerui"
+   },
+   "items": [
+      {
+         "kind": "BuildConfig",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "swagger-ui"
+         },
+         "spec": {
+            "triggers": [
+               {
+                  "type": "GitHub",
+                  "github": {
+                     "secret": "secret"
+                  }
+               },
+               {
+                  "type": "Generic",
+                  "generic": {
+                     "secret": "secret"
+                  }
+               },
+               {
+                  "type": "ImageChange",
+                  "imageChange": {}
+               }
+            ],
+            "source": {
+               "type": "Git",
+               "git": {
+                  "uri": "https://github.com/jorgemoralespou/swagger-ui-ose3.git",
+                  "ref": "master"
+               },
+               "contextDir": ""
+            },
+            "strategy": {
+               "type": "Docker",
+               "dockerStrategy": {
+                  "from": {
+                     "kind": "ImageStreamTag",
+                     "name": "centos:centos7"
+                  }
+               }
+            },
+            "output": {
+               "to": {
+                  "kind": "ImageStreamTag",
+                  "name": "swaggerui:latest"
+               }
+            },
+            "resources": {}
+         }
+      },
+      {
+         "kind": "ImageStream",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "centos"
+         },
+         "spec": {
+            "dockerImageRepository": "library/centos:centos7"
+         }
+      },
+      {
+         "kind": "ImageStream",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "swaggerui"
+         },
+         "spec": {
+            "dockerImageRepository": "",
+            "tags": [
+               {
+                  "name": "latest",
+                  "annotations": {
+                     "description": "Swagger UI image",
+                     "iconClass": "icon-jboss",
+                     "tags": "openshift,swagger,api",
+                     "version": "1.0"
+                  }
+               }
+            ]
+         }
+      },
+      {
+         "kind": "DeploymentConfig",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "swaggerui"
+         },
+         "spec": {
+            "strategy": {
+               "type": "Rolling",
+               "rollingParams": {
+                  "updatePeriodSeconds": 1,
+                  "intervalSeconds": 1,
+                  "timeoutSeconds": 600
+               },
+               "resources": {}
+            },
+            "triggers": [
+               {
+                  "type": "ConfigChange"
+               },
+               {
+                  "type": "ImageChange",
+                  "imageChangeParams": {
+                     "automatic": true,
+                     "containerNames": [
+                        "swaggerui"
+                     ],
+                     "from": {
+                        "kind": "ImageStreamTag",
+                        "name": "swaggerui:latest"
+                     }
+                  }
+               }
+            ],
+            "replicas": 1,
+            "selector": {
+               "deploymentconfig": "swaggerui"
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "deploymentconfig": "swaggerui"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "name": "swaggerui",
+                        "image": "swaggerui",
+                        "ports": [
+                           {
+                              "containerPort": 8480,
+                              "protocol": "TCP"
+                           }
+                        ],
+                        "livenessProbe": {
+                           "tcpSocket": {
+                              "port": 8480
+                           },
+                           "initialDelaySeconds": 5,
+                           "timeoutSeconds": 1
+                        },
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "imagePullPolicy": "IfNotPresent",
+                        "securityContext": {
+                           "capabilities": {},
+                           "privileged": false
+                        }
+                     }
+                  ],
+                  "restartPolicy": "Always",
+                  "dnsPolicy": "ClusterFirst"
+               }
+            }
+         }
+      },
+      {
+         "kind": "Route",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "swaggerui"
+         },
+         "spec": {
+            "host": "swaggerui.example.com",
+            "to": {
+               "kind": "Service",
+               "name": "swaggerui"
+            }
+         }
+      },
+      {
+         "kind": "Service",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "swaggerui"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "name": "swaggerui",
+                  "port": 8480,
+                  "targetPort": 8480
+               }
+            ],
+            "selector": {
+               "deploymentconfig": "swaggerui"
+            },
+            "type": "ClusterIP",
+            "sessionAffinity": "None"
+         }
+      }
+   ]
+}
