@@ -29,7 +29,7 @@ RUN cd /tmp && \
     rm -rf swagger-ui-${SWAGGERUI_VERSION}*
 
 
-RUN cat /etc/nginx/nginx.conf
+RUN ls -altr /etc/nginx/conf.d/
 
 WORKDIR $HOME
 
