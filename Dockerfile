@@ -15,8 +15,10 @@ RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
 EXPOSE 8480
 
 COPY files/swagger.conf /etc/nginx/conf.d/default.conf
+COPY files/nginx.conf /etc/nginx/nginx.conf
 
-RUN echo 'daemon off;' >> /etc/nginx/nginx.conf
+#RUN echo 'daemon off;' >> /etc/nginx/nginx.conf
+#RUN echo 'error_log /tmp/error.log warn;'
 
 ENV SWAGGERUI_VERSION 2.1.2
 RUN cd /tmp && \
