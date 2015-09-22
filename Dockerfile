@@ -28,6 +28,9 @@ RUN cd /tmp && \
     mv swagger-ui-${SWAGGERUI_VERSION}/dist/* $HOME/swagger-ui && \
     rm -rf swagger-ui-${SWAGGERUI_VERSION}*
 
+
+RUN cat /etc/nginx/nginx.conf
+
 WORKDIR $HOME
 
 ENTRYPOINT nginx
