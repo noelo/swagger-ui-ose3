@@ -1,5 +1,6 @@
-FROM centos:centos7
+FROM centos:7
 MAINTAINER Jorge Morales<jmorales@redhat.com>
+MAINTAINER Noel OConnor <noconnor@redhat.com>
 
 ENV HOME=/opt
 
